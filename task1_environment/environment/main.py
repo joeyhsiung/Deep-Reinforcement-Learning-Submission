@@ -7,20 +7,20 @@ import sys
 # Third party imports
 import numpy as np
 import matplotlib.pyplot as plt
-from policy.baseline import agent_policy, blinky_policy, random_policy, blinky_policy_random, inky_policy
+from task1_environment.policy.baseline import agent_policy, blinky_policy, random_policy, blinky_policy_random, inky_policy
 from matplotlib.animation import FuncAnimation
 from tqdm import tqdm
 
 # Local application imports
 # if using relative importing, i.e., "from .maze..." it will raise error because
 # the value of __name__ is __main__ and there is no such file as __main__.maze
-from environment.maze import Maze, Dots
-from environment.character import Agent, Ghost
-from environment.figures import Process
-from environment.figures import Setting
-from environment.graphic import Graphic
-from environment.observation import CommonObservation
-from qlearning_tiancheng_wang.q_state import calculate_state
+from task1_environment.environment.maze import Maze, Dots
+from task1_environment.environment.character import Agent, Ghost
+from task1_environment.environment.figures import Process
+from task1_environment.environment.figures import Setting
+from task1_environment.environment.graphic import Graphic
+from task1_environment.environment.observation import CommonObservation
+from task2_qlearning_tiancheng_wang.q_state import calculate_state
 
 # set numpy array output width
 np.set_printoptions(linewidth=100)

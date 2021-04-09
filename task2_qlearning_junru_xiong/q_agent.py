@@ -1,7 +1,7 @@
 import numpy as np
 import random
-from environment.character import Character
-from policy.baseline import observe
+from task1_environment.environment.character import Character
+from task1_environment.policy.baseline import observe
 
 rng = np.random.default_rng()
 
