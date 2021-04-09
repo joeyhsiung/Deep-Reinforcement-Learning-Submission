@@ -1,13 +1,14 @@
+# reference from https://morvanzhou.github.io
+
 import torch as T
 import torch.multiprocessing as mp
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Categorical
 
-from environment.main import PacMan
-from Junru_Xiong_Qlearning.main import PacManJX
-from A3C.junru_pacman import Environment
-from A3C.a3c_policy import A3C_Policy
+from task1_environment.environment.main import PacMan
+from task2_qlearning_junru_xiong.main import PacManJX
+from task3_a3c_ann.a3c_policy import A3C_Policy
 
 import torch
 import torch.nn as nn

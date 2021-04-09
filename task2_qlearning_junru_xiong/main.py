@@ -1,12 +1,12 @@
 import numpy as np
-from environment.main import PacMan
-from environment.maze import Maze, Dots
-from environment.character import Ghost
-from environment.figures import Process
-from environment.observation import CommonObservation
-from policy.baseline import inky_policy, relative_position_to_direction, safe_delete, observe, rng
-from Junru_Xiong_Qlearning.q_agent import Agent
-from policy.baseline import agent_policy
+from task1_environment.environment.main import PacMan
+from task1_environment.environment.maze import Maze, Dots
+from task1_environment.environment.character import Ghost
+from task1_environment.environment.figures import Process
+from task1_environment.environment.observation import CommonObservation
+from task1_environment.policy.baseline import inky_policy, relative_position_to_direction, safe_delete, observe, rng
+from task2_qlearning_junru_xiong.q_agent import Agent
+from task1_environment.policy.baseline import agent_policy
 
 class PacManJX(PacMan):
     def __init__(self, **kwargs):
