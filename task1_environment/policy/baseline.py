@@ -1,5 +1,4 @@
 import numpy as np
-from tool.error_class import PolicyNotCompatible
 
 rng = np.random.default_rng()
 

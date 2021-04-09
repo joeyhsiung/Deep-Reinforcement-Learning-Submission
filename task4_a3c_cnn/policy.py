@@ -1,6 +1,4 @@
-import torch
-import torch.nn.functional as F
-from a3ctwo.utils import v_wrap, set_init, push_and_pull, record
+from utils import v_wrap, set_init, push_and_pull, record
 
 ACTION_MAP = {
     0: (1, 0),

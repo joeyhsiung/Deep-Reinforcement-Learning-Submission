@@ -19,8 +19,8 @@ def set_init(layers):
         nn.init.constant_(layer.bias, 0.)
 
 
-def push_and_pull(opt, lnet, gnet, done, s_, bs, ba, br, gamma):
-    if done:
+def push_and_pull(opt, lnet, gnet, win, done, s_, bs, ba, br, gamma):
+    if win:
         v_s_ = 0.               # terminal
     else:
         v_s_ = lnet.forward(v_wrap(s_))[-1].data.numpy()[0, 0]
