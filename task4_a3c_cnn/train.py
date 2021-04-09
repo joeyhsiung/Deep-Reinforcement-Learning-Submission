@@ -3,24 +3,23 @@ Reinforcement Learning (A3C) using Pytroch + multiprocessing.
 The most simple implementation for continuous action.
 View more on my Chinese tutorial page [莫烦Python](https://morvanzhou.github.io/).
 """
-
+import os
 import torch
 import torch.nn as nn
-from a3c_cnn.utils import v_wrap, set_init, push_and_pull, record
 import torch.nn.functional as F
 import torch.multiprocessing as mp
-from a3c_cnn.shared_adam import SharedAdam
-from environment.main import PacMan
-import os
-from a3c_cnn.policy import ACTION_MAP
-import numpy as np
+from task1_environment.environment.main import PacMan
+from task4_a3c_cnn.policy import ACTION_MAP
+from task4_a3c_cnn.shared_adam import SharedAdam
+from task4_a3c_cnn.utils import v_wrap, set_init, push_and_pull, record
+from task4_a3c_cnn.a3c_policy import A3CPolicy
 
 os.environ["OMP_NUM_THREADS"] = "1"
 
 UPDATE_GLOBAL_ITER = 100
 GAMMA = 0.9
-MAX_EP = 500000
-
+MAX_EP = 50000
+from task2_qlearning_junru_xiong.main import PacManJX
 # env = PacMan(maze_row_num=2, maze_column_num=2, maze_row_height=2, maze_column_width=2)
 N_S = 100
 N_A = 4
@@ -114,7 +113,7 @@ class Worker(mp.Process):
         self.g_ep, self.g_ep_r, self.res_queue = global_ep, global_ep_r, res_queue
         self.gnet, self.opt = gnet, opt
         self.lnet = Net(N_S, N_A)  # local network
-        self.env = PacMan(maze_row_num=ROW_NUMBER, maze_column_num=ROW_NUMBER,
+        self.env = PacManJX(maze_row_num=ROW_NUMBER, maze_column_num=ROW_NUMBER,
                           maze_row_height=2, maze_column_width=2)
         torch.manual_seed(name)
 
@@ -132,7 +131,25 @@ class Worker(mp.Process):
 
                 a = self.lnet.choose_action(v_wrap(s))
                 s_, reward, done = training_step(self.env, ACTION_MAP[a])
-                # if done: reward = -1
+                if done: reward = -1
+
+                # ************************************************************************
+                # a = self.lnet.choose_action(v_wrap(s))
+                # # print(env.agent.position)
+                # print(a)
+                # move = A3CPolicy(a).policy
+                # self.env.agent.policy = move  # update action
+                # self.env.run_one_step_without_graph()
+                # s_ = self.env.state()
+                # reward = self.env.process.current_reward
+                # # print(r)
+                # # print('{','chuurent',r,'reward','agent',self.env.agent.position,
+                # #       'blinky',self.env.blinky.position,
+                # #       'inky',self.env.inky.position,'}')
+                # # print('{','current',r,'}')
+                # done = self.env.process.termination
+                # ************************************************************************
+
                 ep_r += reward
                 buffer_a.append(a)
 
@@ -141,9 +158,10 @@ class Worker(mp.Process):
                 buffer_s.append(s)
                 buffer_r.append(reward)
                 if total_step % UPDATE_GLOBAL_ITER == 0 or done:  # update global and assign to local net
+                    win = self.env.process.win
                     # print(buffer_r)
                     # sync
-                    push_and_pull(self.opt, self.lnet, self.gnet, done, s_, buffer_s, buffer_a, buffer_r, GAMMA)
+                    push_and_pull(self.opt, self.lnet, self.gnet, win, done, s_, buffer_s, buffer_a, buffer_r, GAMMA)
                     buffer_s, buffer_a, buffer_r = [], [], []
 
                     if done:  # done and print information
@@ -188,8 +206,8 @@ class Worker(mp.Process):
 
 if __name__ == "__main__":
 
-    load_path = 'a3ctwo/1cnn_dropout_0.2_channel_4.pt'
-    save_path = 'a3ctwo/1cnn_dropout_0.2_channel_4.pt'
+    load_path = 'checkpoints/if_win_value_0.pt'
+    save_path = 'checkpoints/if_win_value_0.pt'
     gnet = Net(N_S, N_A)  # global network
     opt = SharedAdam(gnet.parameters(), lr=1e-4, betas=(0.92, 0.999))  # global optimizer
     try:

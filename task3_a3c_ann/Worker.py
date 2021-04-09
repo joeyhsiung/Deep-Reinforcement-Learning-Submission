@@ -11,10 +11,7 @@ from task2_qlearning_junru_xiong.main import PacManJX
 from task3_a3c_ann.a3c_policy import A3C_Policy
 
 import torch
-import torch.nn as nn
 from utils import v_wrap, set_init, push_and_pull
-import torch.nn.functional as F
-import torch.multiprocessing as mp
 
 
 
