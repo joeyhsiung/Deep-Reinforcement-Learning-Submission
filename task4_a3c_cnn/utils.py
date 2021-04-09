@@ -5,7 +5,7 @@ Functions that use multiple times
 from torch import nn
 import torch
 import numpy as np
-
+from numpy import linalg as LA
 
 def v_wrap(np_array, dtype=np.float32):
     if np_array.dtype != dtype:
