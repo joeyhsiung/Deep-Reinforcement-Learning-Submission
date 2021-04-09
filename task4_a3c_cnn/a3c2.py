@@ -6,13 +6,13 @@ View more on my Chinese tutorial page [莫烦Python](https://morvanzhou.github.i
 
 import torch
 import torch.nn as nn
-from a3ctwo.utils import v_wrap, set_init, push_and_pull, record
+from a3c_cnn.utils import v_wrap, set_init, push_and_pull, record
 import torch.nn.functional as F
 import torch.multiprocessing as mp
-from a3ctwo.shared_adam import SharedAdam
+from a3c_cnn.shared_adam import SharedAdam
 from environment.main import PacMan
 import os
-from a3ctwo.policy import ACTION_MAP
+from a3c_cnn.policy import ACTION_MAP
 import numpy as np
 
 os.environ["OMP_NUM_THREADS"] = "1"
@@ -66,8 +66,6 @@ class Net(nn.Module):
         # x = torch.relu(self.cnn2(x))
         # print(x.shape)
         # x = self.drop(x)
-
-
 
         x = x.view(-1, N_S)
 
