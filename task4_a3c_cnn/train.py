@@ -1,33 +1,36 @@
 """
-Reinforcement Learning (A3C) using Pytroch + multiprocessing.
-The most simple implementation for continuous action.
-View more on my Chinese tutorial page [莫烦Python](https://morvanzhou.github.io/).
+Reference (https://morvanzhou.github.io/).
 """
 import os
+import numpy as np
+from numpy import linalg as LA
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.multiprocessing as mp
 from task1_environment.environment.main import PacMan
-from task4_a3c_cnn.policy import ACTION_MAP
 from task4_a3c_cnn.shared_adam import SharedAdam
 from task4_a3c_cnn.utils import v_wrap, set_init, push_and_pull, record
-from task4_a3c_cnn.a3c_policy import A3CPolicy
 
 os.environ["OMP_NUM_THREADS"] = "1"
 
-UPDATE_GLOBAL_ITER = 100
+UPDATE_GLOBAL_ITER = 115
 GAMMA = 0.9
 MAX_EP = 50000
-from task2_qlearning_junru_xiong.main import PacManJX
+
 # env = PacMan(maze_row_num=2, maze_column_num=2, maze_row_height=2, maze_column_width=2)
-N_S = 100
+N_S = 108
 N_A = 4
 
 ROW_NUMBER = 2
-HEIGHT = ROW_NUMBER*3 + 1
+HEIGHT = ROW_NUMBER * 3 + 1
 
-
+ACTION_MAP = {
+    0: (1, 0),
+    1: (0, 1),
+    2: (-1, 0),
+    3: (0, -1)
+}
 # get initial status
 def get_initial_status(game):
     done = game.process.termination
@@ -49,19 +52,21 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.s_dim = s_dim
         self.a_dim = a_dim
-        self.cnn = nn.Conv2d(1, 4, (3, 3))
-        self.drop = nn.Dropout(p=0.2)
+        self.cnn = nn.Conv2d(9, 9, (3, 3))
+        self.cnn2 = nn.Conv2d(9, 12, (3,3))
         # self.cnn2 = nn.Conv2d(4, 8, (3, 3))
         self.linear = nn.Linear(s_dim, s_dim)
+        self.drop = nn.Dropout(p=0.2)
         self.pi1 = nn.Linear(s_dim, 128)
         self.pi2 = nn.Linear(128, a_dim)
         self.v1 = nn.Linear(s_dim, 128)
         self.v2 = nn.Linear(128, 1)
-        set_init([self.cnn, self.linear, self.pi1, self.pi2, self.v1, self.v2])
+        set_init([self.cnn,self.cnn2,self.linear, self.pi1, self.pi2, self.v1, self.v2])
         self.distribution = torch.distributions.Categorical
 
     def forward(self, x):
         x = torch.relu(self.cnn(x))
+        x = torch.relu(self.cnn2(x))
         # x = torch.relu(self.cnn2(x))
         # print(x.shape)
         # x = self.drop(x)
@@ -97,6 +102,29 @@ class Net(nn.Module):
         return total_loss
 
 
+def f3x3_vision(env, name):
+    # array = np.pad(array, pad_width=1, mode='constant',
+    #                constant_values=0)
+    array = env.synthetic_array.copy()
+    character = getattr(env, name)
+    p = character.position
+    x, y = p
+    array[x - 1:x + 2, y - 1:y + 2] *= -1
+    array[array > 0] = 0
+    array[x - 1:x + 2, y - 1:y + 2] *= -1
+    return array
+
+
+def view_self(env, name):
+    array = env.synthetic_array.copy()
+    character = getattr(env, name)
+    # p = character.position
+    color = getattr(env.setting, name + '_color')
+    array[array != color] = 0
+    array[array == color] = 1
+    return array
+
+
 class Worker(mp.Process):
     def __init__(self, gnet, opt, global_ep, global_ep_r, res_queue, name):
         """
@@ -113,16 +141,48 @@ class Worker(mp.Process):
         self.g_ep, self.g_ep_r, self.res_queue = global_ep, global_ep_r, res_queue
         self.gnet, self.opt = gnet, opt
         self.lnet = Net(N_S, N_A)  # local network
-        self.env = PacManJX(maze_row_num=ROW_NUMBER, maze_column_num=ROW_NUMBER,
+        self.env = PacMan(maze_row_num=ROW_NUMBER, maze_column_num=ROW_NUMBER,
                           maze_row_height=2, maze_column_width=2)
-        torch.manual_seed(name)
+
+    def visualize(self):
+        agent_view = f3x3_vision(self.env, 'agent')
+        blinky_view = f3x3_vision(self.env, 'blinky')
+        inky_view = f3x3_vision(self.env, 'inky')
+        agent = view_self(self.env, 'agent')
+        blinky = view_self(self.env, 'blinky')
+        inky = view_self(self.env, 'inky')
+        dot = self.env.synthetic_array.copy()
+        dot[dot != self.env.setting.dot_color] = 0
+        dot[dot != 0] = 1
+        path = self.env.synthetic_array.copy()
+        path[path != self.env.setting.path_color] = 0
+        path[path != 0] = 1
+        chas = self.env.synthetic_array.copy()
+        chas[((chas != self.env.setting.agent_color) &
+              (chas != self.env.setting.blinky_color) &
+              (chas != self.env.setting.inky_color))] = 0
+        features = [
+            agent_view, blinky_view, inky_view, agent, blinky, inky, dot, path, chas
+        ]
+        features = np.stack(features, axis=0)
+        features += 0.1
+        norm = LA.norm(features)
+        features /= norm
+        features = features.reshape((1,9,HEIGHT,HEIGHT))
+        # print(features)
+        return features
+
 
     def run(self):
         total_step = 1
         while self.g_ep.value < MAX_EP:
             self.env.random_reset()
-            s = self.env.synthetic_array
-            s = s.reshape((1, 1, HEIGHT, HEIGHT))
+            # s = self.env.synthetic_array
+            s = self.visualize()
+            # print(s.shape)
+            # s = s.reshape((1, 1, HEIGHT, HEIGHT))
+            # s = s + 1
+
             buffer_s, buffer_a, buffer_r = [], [], []
             ep_r = 0.
             while True:
@@ -130,8 +190,11 @@ class Worker(mp.Process):
                 # self.env.render()
 
                 a = self.lnet.choose_action(v_wrap(s))
+                self.visualize()
                 s_, reward, done = training_step(self.env, ACTION_MAP[a])
-                if done: reward = -1
+                s_ = self.visualize()
+
+                # if done: reward = -1
 
                 # ************************************************************************
                 # a = self.lnet.choose_action(v_wrap(s))
@@ -153,7 +216,7 @@ class Worker(mp.Process):
                 ep_r += reward
                 buffer_a.append(a)
 
-                s_ = s_.reshape((1, 1, HEIGHT, HEIGHT))
+                s_ = s_.reshape((1, 9, HEIGHT, HEIGHT))
 
                 buffer_s.append(s)
                 buffer_r.append(reward)
@@ -206,10 +269,10 @@ class Worker(mp.Process):
 
 if __name__ == "__main__":
 
-    load_path = 'checkpoints/if_win_value_0.pt'
-    save_path = 'checkpoints/if_win_value_0.pt'
+    load_path = 'checkpoints/9_channels.pt'
+    save_path = 'checkpoints/9_channels.pt'
     gnet = Net(N_S, N_A)  # global network
-    opt = SharedAdam(gnet.parameters(), lr=1e-4, betas=(0.92, 0.999))  # global optimizer
+    opt = SharedAdam(gnet.parameters(), lr=1e-1, betas=(0.92, 0.999))  # global optimizer
     try:
         state_dict = torch.load(load_path)
         gnet.load_state_dict(state_dict['model_state_dict'])
