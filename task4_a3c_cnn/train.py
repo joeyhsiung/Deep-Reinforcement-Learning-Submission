@@ -16,7 +16,7 @@ os.environ["OMP_NUM_THREADS"] = "1"
 
 UPDATE_GLOBAL_ITER = 115
 GAMMA = 0.9
-MAX_EP = 50000
+MAX_EP = 500000
 
 # env = PacMan(maze_row_num=2, maze_column_num=2, maze_row_height=2, maze_column_width=2)
 N_S = 108
@@ -31,6 +31,8 @@ ACTION_MAP = {
     2: (-1, 0),
     3: (0, -1)
 }
+
+
 # get initial status
 def get_initial_status(game):
     done = game.process.termination
@@ -53,7 +55,7 @@ class Net(nn.Module):
         self.s_dim = s_dim
         self.a_dim = a_dim
         self.cnn = nn.Conv2d(9, 9, (3, 3))
-        self.cnn2 = nn.Conv2d(9, 12, (3,3))
+        self.cnn2 = nn.Conv2d(9, 12, (3, 3))
         # self.cnn2 = nn.Conv2d(4, 8, (3, 3))
         self.linear = nn.Linear(s_dim, s_dim)
         self.drop = nn.Dropout(p=0.2)
@@ -61,7 +63,7 @@ class Net(nn.Module):
         self.pi2 = nn.Linear(128, a_dim)
         self.v1 = nn.Linear(s_dim, 128)
         self.v2 = nn.Linear(128, 1)
-        set_init([self.cnn,self.cnn2,self.linear, self.pi1, self.pi2, self.v1, self.v2])
+        set_init([self.cnn, self.cnn2, self.linear, self.pi1, self.pi2, self.v1, self.v2])
         self.distribution = torch.distributions.Categorical
 
     def forward(self, x):
@@ -168,10 +170,9 @@ class Worker(mp.Process):
         features += 0.1
         norm = LA.norm(features)
         features /= norm
-        features = features.reshape((1,9,HEIGHT,HEIGHT))
+        features = features.reshape((1, 9, HEIGHT, HEIGHT))
         # print(features)
         return features
-
 
     def run(self):
         total_step = 1
@@ -269,18 +270,24 @@ class Worker(mp.Process):
 
 if __name__ == "__main__":
 
-    load_path = 'checkpoints/9_channels.pt'
-    save_path = 'checkpoints/9_channels.pt'
+    load_path = 'checkpoints/9_channels_lr1e-3.pt'
+    save_path = 'checkpoints/9_channels_lr1e-3.pt'
     gnet = Net(N_S, N_A)  # global network
-    opt = SharedAdam(gnet.parameters(), lr=1e-1, betas=(0.92, 0.999))  # global optimizer
+
     try:
         state_dict = torch.load(load_path)
         gnet.load_state_dict(state_dict['model_state_dict'])
-        opt.load_state_dict(state_dict['optimizer_state_dict'])
     except FileNotFoundError:
         print('new model')
 
     gnet.share_memory()  # share the global parameters in multiprocessing
+    opt = SharedAdam(gnet.parameters(), lr=1e-3, betas=(0.92, 0.999))  # global optimizer
+
+    try:
+        state_dict = torch.load(load_path)
+        opt.load_state_dict(state_dict['optimizer_state_dict'])
+    except FileNotFoundError:
+        print('new optimiser')
 
     global_ep, global_ep_r, res_queue = mp.Value('i', 0), mp.Value('d', 0.), mp.Queue()
 
