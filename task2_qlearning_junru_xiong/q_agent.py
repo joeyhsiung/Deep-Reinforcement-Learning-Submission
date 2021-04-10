@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/Deep-Reinforcement-Learinng-Submission/task1_environment/environment")
 import numpy as np
 import random
 from task1_environment.environment.character import Character
@@ -16,6 +18,7 @@ class Agent(Character):
         self.Q_values = {}
         self.actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
         self.epsilon_greedy = False
+        self.net = None
         # self.dots_left = None
 
     def epsilon_greedy_choose(self):
@@ -51,7 +54,8 @@ class Agent(Character):
             self.observation = self.observe(**ob_kwargs)
             policy_kwargs = {'observation': self.observation,
                              'actions': self.actions,
-                             'Q': self.Q, **kwargs}
+                             'Q': self.Q,
+                             'net':self.net,**kwargs}
             self.direction_proposal = self.policy(**policy_kwargs)
             self.target_proposal = self.position + self.direction_proposal
         self.epsilon_greedy = False

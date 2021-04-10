@@ -1,3 +1,6 @@
+import sys
+sys.path.append("/Deep-Reinforcement-Learinng-Submission/task1_environment/")
+
 import numpy as np
 from task1_environment.environment.main import PacMan
 from task1_environment.environment.maze import Maze, Dots
