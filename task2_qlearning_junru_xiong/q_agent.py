@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/Deep-Reinforcement-Learinng-Submission/task1_environment/environment")
 import numpy as np
 import random
 from task1_environment.environment.character import Character
