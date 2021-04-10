@@ -1,11 +1,8 @@
-"""
-Functions that use multiple times
-"""
-
-from torch import nn
 import torch
 import numpy as np
-from numpy import linalg as LA
+from torch import nn
+import functools
+
 
 def v_wrap(np_array, dtype=np.float32):
     if np_array.dtype != dtype:
@@ -21,12 +18,12 @@ def set_init(layers):
 
 def push_and_pull(opt, lnet, gnet, win, done, s_, bs, ba, br, gamma):
     if win:
-        v_s_ = 0.               # terminal
+        v_s_ = 0.  # terminal
     else:
         v_s_ = lnet.forward(v_wrap(s_))[-1].data.numpy()[0, 0]
 
     buffer_v_target = []
-    for r in br[::-1]:    # reverse buffer r
+    for r in br[::-1]:  # reverse buffer r
         v_s_ = r + gamma * v_s_
         buffer_v_target.append(v_s_)
     buffer_v_target.reverse()
@@ -61,3 +58,23 @@ def record(global_ep, global_ep_r, ep_r, res_queue, name):
         "Ep:", global_ep.value,
         "| Ep_r: %.0f" % global_ep_r.value,
     )
+
+
+def prepare_animation(game, model, policy, checkpoint_path, height):
+    model.eval()
+    checkpoint = torch.load(checkpoint_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    policy = functools.partial(policy, game=game, height=height, model=model)
+    game.random_reset()
+    return game
+
+
+def check_winrate(game, total_games):
+    win = 0
+    for i in range(total_games):
+        game.random_reset()
+        while not game.process.termination:
+            game.run_one_step_without_graph()
+        if game.process.win:
+            win += 1
+    return win / total_games
