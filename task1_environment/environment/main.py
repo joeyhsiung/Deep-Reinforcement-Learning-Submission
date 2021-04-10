@@ -19,8 +19,7 @@ from task1_environment.environment.character import Agent, Ghost
 from task1_environment.environment.figures import Process
 from task1_environment.environment.figures import Setting
 from task1_environment.environment.graphic import Graphic
-from task1_environment.environment.observation import CommonObservation
-from task2_qlearning_tiancheng_wang.q_state import calculate_state
+from task1_environment.environment.observation import CommonObservation, calculate_state
 
 # set numpy array output width
 np.set_printoptions(linewidth=100)

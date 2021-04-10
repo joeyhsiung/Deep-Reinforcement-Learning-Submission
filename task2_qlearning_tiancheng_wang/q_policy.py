@@ -1,9 +1,7 @@
 # https://lilianweng.github.io/lil-log/2018/05/05/implementing-deep-reinforcement-learning-models.html#naive-q-learning
-import numpy as np
-from qlearning_tiancheng_wang.q_state import calculate_state
-import random
 
-ACTION_SPACE = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+import random
+from task1_environment.policy.constants import ACTION_SPACE
 
 
 def q_policy(state, table, **kwargs):
