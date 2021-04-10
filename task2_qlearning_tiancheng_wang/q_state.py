@@ -68,8 +68,8 @@ def calculate_state(**kwargs):
     #     d[2] = 1
     # if three_square[(1, 2)] == setting.wall_color:
     #     d[3] = 1
-    d[0] = three_square[(0,1)]
-    d[1] = three_square[(2,1)]
+    d[0] = three_square[(0, 1)]
+    d[1] = three_square[(2, 1)]
     d[2] = three_square[(1, 0)]
     d[3] = three_square[(1, 2)]
     
