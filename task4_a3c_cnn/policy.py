@@ -1,8 +1,7 @@
-from utils import v_wrap, set_init, push_and_pull, record
 import numpy as np
 from numpy import linalg as LA
 from task4_a3c_cnn.train import f3x3_vision, view_self
-
+from task4_a3c_cnn.utils import v_wrap
 
 ACTION_MAP = {
     0: (1, 0),
@@ -34,17 +33,18 @@ def visualize(game, HEIGHT):
     ]
     features = np.stack(features, axis=0)
     features += 0.1
-    norm = LA.norm(features)
-    features /= norm
+    # norm = LA.norm(features)
+    features /= 14
     features = features.reshape((1, 9, HEIGHT, HEIGHT))
     return features
 
 
-def chanel_9_policy(game, height, model, **kwargs):
+def channel_9_policy(game, height, model, **kwargs):
     s = visualize(game, height)
     a = model.choose_action(v_wrap(s))
     action = ACTION_MAP[a]
     return action
+
 
 class A3CTwo:
     def __init__(self, model):
@@ -52,14 +52,11 @@ class A3CTwo:
         self.lnet = model
         self.lnet.eval()
 
-
-
     def __call__(self, **policy_kwargs):
         array = policy_kwargs['synthetic_array']
         self.lnet.eval()
         a = self.lnet.choose_action(v_wrap(array[None, None, :]))
         # print('\n',a)
         action = ACTION_MAP[a]
-
 
         return action
