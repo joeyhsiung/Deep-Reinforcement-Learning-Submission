@@ -11,6 +11,15 @@ def three_square_observe(my_position, array):
     return surroundings
 
 
+def calculate_state(**kwargs):
+    self_position = kwargs['self_position']
+    three_square = getattr(kwargs['common_observation'], 'agent_three_square')
+    blinky = np.array(kwargs['blinky_p'])
+    inky = np.array(kwargs['inky_p'])
+    state = tuple(np.concatenate((three_square.flatten(), self_position, blinky, inky)))
+    return state
+
+
 class CommonObservation:
     def __init__(self, maze_array, **kwargs):
         self.agent_three_square = None

@@ -57,22 +57,22 @@ class Setting:
         # }
 
         # best for task 2
-        # self.reward_dict = {
-        #     self.dot_color: 10,
-        #     self.path_color: -1,
-        #     self.blinky_color: -99,
-        #     self.inky_color: -99,
-        #     self.wall_color: -20,
-        # }
+        self.reward_dict = {
+            self.dot_color: 10,
+            self.path_color: -1,
+            self.blinky_color: -99,
+            self.inky_color: -99,
+            self.wall_color: -20,
+        }
 
         # for task 4
-        self.reward_dict = {
-            self.dot_color: 1,
-            self.path_color: -0.01,
-            self.blinky_color: -1,
-            self.inky_color: -1,
-            self.wall_color: -0.1,
-        }
+        # self.reward_dict = {
+        #     self.dot_color: 1,
+        #     self.path_color: -0.01,
+        #     self.blinky_color: -1,
+        #     self.inky_color: -1,
+        #     self.wall_color: -0.1,
+        # }
 
 
 class Process:
