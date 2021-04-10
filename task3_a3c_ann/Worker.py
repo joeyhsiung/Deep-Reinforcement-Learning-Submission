@@ -12,7 +12,11 @@ from task3_a3c_ann.a3c_policy import A3C_Policy
 
 import torch
 import torch.nn as nn
+<<<<<<< Updated upstream
 from utils import v_wrap, set_init, push_and_pull
+=======
+from task3_a3c_ann.utils import v_wrap, set_init, push_and_pull
+>>>>>>> Stashed changes
 import torch.nn.functional as F
 import torch.multiprocessing as mp
 
@@ -38,7 +42,11 @@ class SharedAdam(T.optim.Adam):
 
 UPDATE_GLOBAL_ITER = 5
 GAMMA = 0.9
+<<<<<<< Updated upstream
 MAX_EP = 1000000
+=======
+MAX_EP = 1300000
+>>>>>>> Stashed changes
 
 env = PacManJX(maze_row_num=2, maze_column_num=2, maze_row_height=2, maze_column_width=2)
 N_S, N_A = 15, 4  # input dimension and output dimension
@@ -91,6 +99,10 @@ class Worker(mp.Process):
         self.gnet, self.opt = gnet, opt
         self.lnet = Net(N_S, N_A)  # local network
         self.env = PacManJX(maze_row_num=1, maze_column_num=2, maze_row_height=2, maze_column_width=2)
+<<<<<<< Updated upstream
+=======
+        self.blinky_random = False
+>>>>>>> Stashed changes
         self.env.setting.maximum_time = 400
 
     def record(self,global_ep, global_ep_r, ep_r, res_queue, name):
@@ -152,8 +164,13 @@ class Worker(mp.Process):
 
 
 if __name__ == "__main__":
+<<<<<<< Updated upstream
     load_path = 'saved_models/a3c_ann_randomGhost_lr1e-4_gamma0.9_1mIteration.pt'
     save_path = 'saved_models/a3c_ann_randomGhost_lr1e-4_gamma0.9_1mIteration.pt'
+=======
+    load_path = 'saved_models/a3c_ann_h2w2_intelGhost_lr1e-4_gamma0.9_1mIteration.pt'
+    save_path = 'saved_models/a3c_ann_h2w2_intelGhost_lr1e-4_gamma0.9_1mIteration.pt'
+>>>>>>> Stashed changes
     gnet = Net(N_S, N_A)  # global network
     gnet.share_memory()  # share the global parameters in multiprocessing
     opt = SharedAdam(gnet.parameters(), lr=1e-4, betas=(0.92, 0.9999))  # global optimizer

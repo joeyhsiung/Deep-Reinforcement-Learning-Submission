@@ -22,3 +22,4 @@ def q_policy(**policy_kwargs):
     max_value = max([Q(s, a) for a in actions])
     max_actions = [a for a in actions if Q(s, a) == max_value]
     return random.choice(max_actions)
+
