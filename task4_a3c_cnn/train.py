@@ -16,7 +16,7 @@ os.environ["OMP_NUM_THREADS"] = "1"
 
 UPDATE_GLOBAL_ITER = 115
 GAMMA = 0.9
-MAX_EP = 500000
+MAX_EP = 1000000
 
 # env = PacMan(maze_row_num=2, maze_column_num=2, maze_row_height=2, maze_column_width=2)
 N_S = 108
@@ -168,7 +168,8 @@ class Worker(mp.Process):
         ]
         features = np.stack(features, axis=0)
         features += 0.1
-        norm = LA.norm(features)
+        # norm = LA.norm(features)
+        norm = 14
         features /= norm
         features = features.reshape((1, 9, HEIGHT, HEIGHT))
         # print(features)
@@ -270,8 +271,8 @@ class Worker(mp.Process):
 
 if __name__ == "__main__":
 
-    load_path = 'checkpoints/9_channels_lr1e-3.pt'
-    save_path = 'checkpoints/9_channels_lr1e-3.pt'
+    load_path = 'checkpoints/9_channels_lr1e-4_norm_14.pt'
+    save_path = 'checkpoints/9_channels_lr1e-4_norm_14.pt'
     gnet = Net(N_S, N_A)  # global network
 
     try:
@@ -281,13 +282,13 @@ if __name__ == "__main__":
         print('new model')
 
     gnet.share_memory()  # share the global parameters in multiprocessing
-    opt = SharedAdam(gnet.parameters(), lr=1e-3, betas=(0.92, 0.999))  # global optimizer
+    opt = SharedAdam(gnet.parameters(), lr=1e-4, betas=(0.92, 0.999))  # global optimizer
 
-    try:
-        state_dict = torch.load(load_path)
-        opt.load_state_dict(state_dict['optimizer_state_dict'])
-    except FileNotFoundError:
-        print('new optimiser')
+    # try:
+    #     state_dict = torch.load(load_path)
+    #     opt.load_state_dict(state_dict['optimizer_state_dict'])
+    # except FileNotFoundError:
+    #     print('new optimiser')
 
     global_ep, global_ep_r, res_queue = mp.Value('i', 0), mp.Value('d', 0.), mp.Queue()
 

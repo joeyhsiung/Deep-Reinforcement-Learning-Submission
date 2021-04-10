@@ -1,5 +1,9 @@
 import numpy as np
 
+# setting class control the general settings of the game, such as size, colors, maximum time step
+# Process class record the key figures and states of the game such as time, reward, if_win and
+# if_terminate.
+
 
 class Setting:
     def __init__(
@@ -56,7 +60,6 @@ class Setting:
         # self.reward_dict = {
         #     self.dot_color: 10,
         #     self.path_color: -1,
-        #     self.agent_color: -20,
         #     self.blinky_color: -99,
         #     self.inky_color: -99,
         #     self.wall_color: -20,
@@ -66,7 +69,6 @@ class Setting:
         self.reward_dict = {
             self.dot_color: 1,
             self.path_color: -0.01,
-            # self.agent_color: ,
             self.blinky_color: -1,
             self.inky_color: -1,
             self.wall_color: -0.1,
