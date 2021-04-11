@@ -9,6 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.multiprocessing as mp
 from task1_environment.environment.main import PacMan
+from task1_environment.policy.baseline import blinky_policy
 from task4_a3c_cnn.shared_adam import SharedAdam
 from task4_a3c_cnn.utils import v_wrap, set_init, push_and_pull, record
 from task4_a3c_cnn.policy import visualize
@@ -51,7 +52,7 @@ def training_step(game, act):
 
 class Net(nn.Module):
     def __init__(self, s_dim, a_dim):
-        super(Net, self).__init__()
+        super().__init__()
         self.s_dim = s_dim
         self.a_dim = a_dim
         self.cnn = nn.Conv2d(9, 9, (3, 3))
@@ -129,6 +130,7 @@ class Worker(mp.Process):
             self.env.setting.inky_color: -1,
             self.env.setting.wall_color: -0.1,
         }
+        self.env.blinky.policy = blinky_policy
 
     def visual(self):
         features = visualize(self.env, 7)
@@ -230,8 +232,8 @@ class Worker(mp.Process):
 
 if __name__ == "__main__":
 
-    load_path = 'checkpoints/9c_lr1e-4_norm14_original_reward.pt'
-    save_path = 'checkpoints/9c_lr1e-4_norm14_original_reward.pt'
+    load_path = 'checkpoints/9c_lr1e-4_norm14_hard.pt'
+    save_path = 'checkpoints/9c_lr1e-4_norm14_hard.pt'
     gnet = Net(N_S, N_A)  # global network
 
     try:
