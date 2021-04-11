@@ -1,6 +1,5 @@
 import sys
 import numpy as np
-import matplotlib.pyplot as plt
 from types import MethodType
 from numpy.random import default_rng
 from task1_environment.policy.constants import ACTION_SPACE

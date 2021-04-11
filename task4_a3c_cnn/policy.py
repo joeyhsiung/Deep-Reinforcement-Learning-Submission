@@ -1,6 +1,6 @@
 import numpy as np
 from numpy import linalg as LA
-from task4_a3c_cnn.train import f3x3_vision, view_self
+# from task4_a3c_cnn.train import f3x3_vision, view_self
 from task4_a3c_cnn.utils import v_wrap
 
 ACTION_MAP = {
@@ -9,6 +9,29 @@ ACTION_MAP = {
     2: (-1, 0),
     3: (0, -1)
 }
+
+
+def f3x3_vision(env, name):
+    # array = np.pad(array, pad_width=1, mode='constant',
+    #                constant_values=0)
+    array = env.synthetic_array.copy()
+    character = getattr(env, name)
+    p = character.position
+    x, y = p
+    array[x - 1:x + 2, y - 1:y + 2] *= -1
+    array[array > 0] = 0
+    array[x - 1:x + 2, y - 1:y + 2] *= -1
+    return array
+
+
+def view_self(env, name):
+    array = env.synthetic_array.copy()
+    character = getattr(env, name)
+    # p = character.position
+    color = getattr(env.setting, name + '_color')
+    array[array != color] = 0
+    array[array == color] = 1
+    return array
 
 
 def visualize(game, HEIGHT):

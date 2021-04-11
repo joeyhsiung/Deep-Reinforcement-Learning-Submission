@@ -65,6 +65,7 @@ def prepare_animation(game, model, policy, checkpoint_path, height):
     checkpoint = torch.load(checkpoint_path)
     model.load_state_dict(checkpoint['model_state_dict'])
     policy = functools.partial(policy, game=game, height=height, model=model)
+    game.agent.set_policy(policy)
     game.random_reset()
     return game
 

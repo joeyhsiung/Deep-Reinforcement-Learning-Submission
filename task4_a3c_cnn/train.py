@@ -11,7 +11,7 @@ import torch.multiprocessing as mp
 from task1_environment.environment.main import PacMan
 from task4_a3c_cnn.shared_adam import SharedAdam
 from task4_a3c_cnn.utils import v_wrap, set_init, push_and_pull, record
-
+from task4_a3c_cnn.policy import visualize
 os.environ["OMP_NUM_THREADS"] = "1"
 
 UPDATE_GLOBAL_ITER = 115
@@ -104,29 +104,6 @@ class Net(nn.Module):
         return total_loss
 
 
-def f3x3_vision(env, name):
-    # array = np.pad(array, pad_width=1, mode='constant',
-    #                constant_values=0)
-    array = env.synthetic_array.copy()
-    character = getattr(env, name)
-    p = character.position
-    x, y = p
-    array[x - 1:x + 2, y - 1:y + 2] *= -1
-    array[array > 0] = 0
-    array[x - 1:x + 2, y - 1:y + 2] *= -1
-    return array
-
-
-def view_self(env, name):
-    array = env.synthetic_array.copy()
-    character = getattr(env, name)
-    # p = character.position
-    color = getattr(env.setting, name + '_color')
-    array[array != color] = 0
-    array[array == color] = 1
-    return array
-
-
 class Worker(mp.Process):
     def __init__(self, gnet, opt, global_ep, global_ep_r, res_queue, name):
         """
@@ -145,34 +122,16 @@ class Worker(mp.Process):
         self.lnet = Net(N_S, N_A)  # local network
         self.env = PacMan(maze_row_num=ROW_NUMBER, maze_column_num=ROW_NUMBER,
                           maze_row_height=2, maze_column_width=2)
+        self.env.setting.reward_dict = {
+            self.env.setting.dot_color: 1,
+            self.env.setting.path_color: -0.01,
+            self.env.setting.blinky_color: -1,
+            self.env.setting.inky_color: -1,
+            self.env.setting.wall_color: -0.1,
+        }
 
-    def visualize(self):
-        agent_view = f3x3_vision(self.env, 'agent')
-        blinky_view = f3x3_vision(self.env, 'blinky')
-        inky_view = f3x3_vision(self.env, 'inky')
-        agent = view_self(self.env, 'agent')
-        blinky = view_self(self.env, 'blinky')
-        inky = view_self(self.env, 'inky')
-        dot = self.env.synthetic_array.copy()
-        dot[dot != self.env.setting.dot_color] = 0
-        dot[dot != 0] = 1
-        path = self.env.synthetic_array.copy()
-        path[path != self.env.setting.path_color] = 0
-        path[path != 0] = 1
-        chas = self.env.synthetic_array.copy()
-        chas[((chas != self.env.setting.agent_color) &
-              (chas != self.env.setting.blinky_color) &
-              (chas != self.env.setting.inky_color))] = 0
-        features = [
-            agent_view, blinky_view, inky_view, agent, blinky, inky, dot, path, chas
-        ]
-        features = np.stack(features, axis=0)
-        features += 0.1
-        # norm = LA.norm(features)
-        norm = 14
-        features /= norm
-        features = features.reshape((1, 9, HEIGHT, HEIGHT))
-        # print(features)
+    def visual(self):
+        features = visualize(self.env, 7)
         return features
 
     def run(self):
@@ -180,7 +139,7 @@ class Worker(mp.Process):
         while self.g_ep.value < MAX_EP:
             self.env.random_reset()
             # s = self.env.synthetic_array
-            s = self.visualize()
+            s = self.visual()
             # print(s.shape)
             # s = s.reshape((1, 1, HEIGHT, HEIGHT))
             # s = s + 1
@@ -192,9 +151,9 @@ class Worker(mp.Process):
                 # self.env.render()
 
                 a = self.lnet.choose_action(v_wrap(s))
-                self.visualize()
+                self.visual()
                 s_, reward, done = training_step(self.env, ACTION_MAP[a])
-                s_ = self.visualize()
+                s_ = self.visual()
 
                 # if done: reward = -1
 
@@ -271,8 +230,8 @@ class Worker(mp.Process):
 
 if __name__ == "__main__":
 
-    load_path = 'checkpoints/9_channels_lr1e-4_norm_14.pt'
-    save_path = 'checkpoints/9_channels_lr1e-4_norm_14.pt'
+    load_path = 'checkpoints/9c_lr1e-4_norm14_original_reward.pt'
+    save_path = 'checkpoints/9c_lr1e-4_norm14_original_reward.pt'
     gnet = Net(N_S, N_A)  # global network
 
     try:
