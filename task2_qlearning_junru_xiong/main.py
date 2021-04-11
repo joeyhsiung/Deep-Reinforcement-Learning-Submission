@@ -22,7 +22,7 @@ class PacManJX(PacMan):
 
         self.setting.reward_dict = {
             self.setting.dot_color: 10,
-            self.setting.path_color: 0,
+            self.setting.path_color: -1,
             self.setting.wall_color: -20,
             self.setting.blinky_color: -99,
             self.setting.inky_color: -99

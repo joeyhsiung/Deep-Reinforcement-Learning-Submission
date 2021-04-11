@@ -24,3 +24,12 @@ def A3C_Policy_test(**policy_kwargs):
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
     action = net.choose_action(v_wrap(s[None, :]))
     return actions[action]
+
+def A3C_Policy_test2(**policy_kwargs):
+    s = policy_kwargs['s']
+    Q = policy_kwargs['Q']
+    net = policy_kwargs['net']
+    # # find the optimal Q value action
+    actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    action = net.choose_action(s)
+    return actions[action]
