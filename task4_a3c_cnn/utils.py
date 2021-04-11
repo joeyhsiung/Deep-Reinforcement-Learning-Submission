@@ -4,18 +4,21 @@ from torch import nn
 import functools
 
 
+# convert numpy to torch
 def v_wrap(np_array, dtype=np.float32):
     if np_array.dtype != dtype:
         np_array = np_array.astype(dtype)
     return torch.from_numpy(np_array)
 
 
+# initialise weight
 def set_init(layers):
     for layer in layers:
         nn.init.normal_(layer.weight, mean=0., std=0.1)
         nn.init.constant_(layer.bias, 0.)
 
 
+# back propagation
 def push_and_pull(opt, lnet, gnet, win, done, s_, bs, ba, br, gamma):
     if win:
         v_s_ = 0.  # terminal
@@ -44,6 +47,7 @@ def push_and_pull(opt, lnet, gnet, win, done, s_, bs, ba, br, gamma):
     lnet.load_state_dict(gnet.state_dict())
 
 
+# show training progress
 def record(global_ep, global_ep_r, ep_r, res_queue, name):
     with global_ep.get_lock():
         global_ep.value += 1
@@ -60,6 +64,7 @@ def record(global_ep, global_ep_r, ep_r, res_queue, name):
     )
 
 
+# as in name
 def prepare_animation(game, model, policy, checkpoint_path, height):
     model.eval()
     checkpoint = torch.load(checkpoint_path)
@@ -70,6 +75,7 @@ def prepare_animation(game, model, policy, checkpoint_path, height):
     return game
 
 
+# as in name
 def check_winrate(game, total_games):
     win = 0
     for i in range(total_games):

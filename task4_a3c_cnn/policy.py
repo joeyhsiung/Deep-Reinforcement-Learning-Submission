@@ -11,6 +11,7 @@ ACTION_MAP = {
 }
 
 
+# keep 3x3 surrounding cells and mask everything else
 def f3x3_vision(env, name):
     # array = np.pad(array, pad_width=1, mode='constant',
     #                constant_values=0)
@@ -24,6 +25,7 @@ def f3x3_vision(env, name):
     return array
 
 
+# keep self cell and mask every thing else
 def view_self(env, name):
     array = env.synthetic_array.copy()
     character = getattr(env, name)
@@ -34,6 +36,7 @@ def view_self(env, name):
     return array
 
 
+# produce 9 images explained in report
 def visualize(game, HEIGHT):
     agent_view = f3x3_vision(game, 'agent')
     blinky_view = f3x3_vision(game, 'blinky')
@@ -62,6 +65,7 @@ def visualize(game, HEIGHT):
     return features
 
 
+# task 4 compatible policy
 def channel_9_policy(game, height, model, **kwargs):
     s = visualize(game, height)
     a = model.choose_action(v_wrap(s))
@@ -69,6 +73,7 @@ def channel_9_policy(game, height, model, **kwargs):
     return action
 
 
+# not in use, previous policy
 class A3CTwo:
     def __init__(self, model):
         self.action_map = ACTION_MAP
