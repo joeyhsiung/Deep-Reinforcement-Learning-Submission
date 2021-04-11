@@ -1,9 +1,10 @@
 import functools
 import matplotlib.pyplot as plt
-import numpy as np
 from types import MethodType
 from task2_qlearning_tiancheng_wang.q_policy import q_policy
 
+
+# goals of functions in this file are in the name of the function
 
 def check_win_rate(game, state_func, q_table, total_games):
     policy = functools.partial(q_policy, table=q_table)
@@ -32,7 +33,7 @@ def plot_data(data, path, title, x_name, y_name, fontsize=18):
 def prepare_animation(game, policy, state_func, table):
     game.random_reset()
     game.generate_animation()
-    policy = functools.partial(policy, table=table  )
+    policy = functools.partial(policy, table=table)
     game.state = MethodType(state_func, game)
     game.agent.policy = policy
     return game

@@ -41,12 +41,11 @@ def safe_delete(dictionary, key):
         del dictionary[key]
     return dictionary
 
-
+# intelligent agent policy
 def agent_policy(**policy_kwargs):
     candidates = {}
     for k, v in zip(['right', 'down', 'up', 'left'], [(0, 1), (1, 0), (-1, 0), (0, -1)]):
         candidates[k] = np.array(v)
-
     agent_blinky = getattr(policy_kwargs['common_observation'], 'agent_blinky')
     ab_distance = abs(agent_blinky[0]) + abs(agent_blinky[1])
     agent_inky = getattr(policy_kwargs['common_observation'], 'agent_inky')
@@ -101,7 +100,7 @@ def agent_policy(**policy_kwargs):
 
     return list(v for k, v in candidates.items())[0]
 
-
+# intelligent blinky policy
 def blinky_policy(**policy_kwargs):
     candidates = {}
     for k, v in zip(['right', 'down', 'up', 'left'], [(0, 1), (1, 0), (-1, 0), (0, -1)]):
@@ -147,7 +146,7 @@ def blinky_policy(**policy_kwargs):
 
     return list(v for k, v in candidates.items())[0]
 
-
+# general random policy
 def random_policy(**policy_kwargs):
     name = policy_kwargs['name']
     candidates = {}
@@ -167,7 +166,7 @@ def random_policy(**policy_kwargs):
         safe_delete(candidates, key)
     return rng.choice(list(v for k, v in candidates.items()))
 
-
+# blinky random policy
 def blinky_policy_random(**policy_kwargs):
     candidates = {}
     for k, v in zip(['right', 'down', 'up', 'left'], [(0, 1), (1, 0), (-1, 0), (0, -1)]):
@@ -191,7 +190,7 @@ def blinky_policy_random(**policy_kwargs):
         safe_delete(candidates, key)
     return rng.choice(list(v for k, v in candidates.items()))
 
-
+# inky random policy
 def inky_policy(**policy_kwargs):
     candidates = {}
     for k, v in zip(['right', 'down', 'up', 'left'], [(0, 1), (1, 0), (-1, 0), (0, -1)]):

@@ -13,6 +13,7 @@ from task1_environment.policy.baseline import blinky_policy
 from task4_a3c_cnn.shared_adam import SharedAdam
 from task4_a3c_cnn.utils import v_wrap, set_init, push_and_pull, record
 from task4_a3c_cnn.policy import visualize
+
 os.environ["OMP_NUM_THREADS"] = "1"
 
 UPDATE_GLOBAL_ITER = 115
@@ -50,6 +51,7 @@ def training_step(game, act):
     return state, reward, done
 
 
+# model architecture
 class Net(nn.Module):
     def __init__(self, s_dim, a_dim):
         super().__init__()
@@ -197,6 +199,7 @@ class Worker(mp.Process):
                 s = s_
                 total_step += 1
 
+            # evaluation script, not in use, replaced by other eval functions in utils.py
             # print(total_step)
             # if total_step % 500 == 0:
             #     # print('step:', total_step)
@@ -232,6 +235,7 @@ class Worker(mp.Process):
 
 if __name__ == "__main__":
 
+    # load checkpoints if train a previous model
     load_path = 'checkpoints/9c_lr1e-4_norm14_hard.pt'
     save_path = 'checkpoints/9c_lr1e-4_norm14_hard.pt'
     gnet = Net(N_S, N_A)  # global network
@@ -245,6 +249,7 @@ if __name__ == "__main__":
     gnet.share_memory()  # share the global parameters in multiprocessing
     opt = SharedAdam(gnet.parameters(), lr=1e-4, betas=(0.92, 0.999))  # global optimizer
 
+    # when it is needed to load a previous optimiser, this will implemented
     # try:
     #     state_dict = torch.load(load_path)
     #     opt.load_state_dict(state_dict['optimizer_state_dict'])

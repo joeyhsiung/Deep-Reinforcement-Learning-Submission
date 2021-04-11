@@ -21,13 +21,13 @@ def find_nearest_dot(array, agent_position, setting):
 
     return -math.inf, -math.inf
 
-
+# reduce relative position, to ignore any values that abs(value)>2 to reduce the number of total states
 def reduce(position):
     x, y = min(position[0], 2), min(position[1], 2)
     x, y = max(x, -2), max(y, -2)
     return x, y
 
-
+# explained in the report
 def simple_state(game):
     three_square = game.common_observation.agent_three_square
     agent_position = game.agent.position
@@ -36,7 +36,7 @@ def simple_state(game):
     state = tuple(np.concatenate((three_square.flatten(), agent_position, blinky_position, inky_position)))
     return state
 
-
+# explained in the report
 def relative_state(game):
     three_square = game.common_observation.agent_three_square
     agent_position = game.agent.position

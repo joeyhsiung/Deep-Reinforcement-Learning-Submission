@@ -11,6 +11,7 @@ def three_square_observe(my_position, array):
     return surroundings
 
 
+# default state function, return agent surrouding cells and absolute positions of all characters.
 def calculate_state(**kwargs):
     self_position = kwargs['self_position']
     three_square = getattr(kwargs['common_observation'], 'agent_three_square')
@@ -20,6 +21,8 @@ def calculate_state(**kwargs):
     return state
 
 
+# This class is record common observations, to be used conveniently in other tasks.
+# three squares means surrounding cells and agent_blinky means relative position from agent to blinky and so on.
 class CommonObservation:
     def __init__(self, maze_array, **kwargs):
         self.agent_three_square = None

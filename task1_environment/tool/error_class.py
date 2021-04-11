@@ -2,7 +2,7 @@ class Error(Exception):
     """Base class for exceptions in this module."""
     pass
 
-
+# not in use
 class PolicyNotCompatible(Error):
     """Exception raised for errors in the input.
 
