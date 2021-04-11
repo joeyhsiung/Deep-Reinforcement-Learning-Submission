@@ -32,7 +32,7 @@ def plot_data(data, path, title, x_name, y_name, fontsize=18):
 def prepare_animation(game, policy, state_func, table):
     game.random_reset()
     game.generate_animation()
-    policy = functools.partial(policy, table=table)
+    policy = functools.partial(policy, table=table  )
     game.state = MethodType(state_func, game)
     game.agent.policy = policy
     return game
