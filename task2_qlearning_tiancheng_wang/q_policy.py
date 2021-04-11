@@ -4,6 +4,7 @@ import random
 from task1_environment.policy.constants import ACTION_SPACE
 
 
+# Agent policy for Q learning
 def q_policy(state, table, **kwargs):
     qvals = {action: table[state, action] for action in ACTION_SPACE}
     max_q_val = max(qvals.values())

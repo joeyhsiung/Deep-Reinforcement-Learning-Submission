@@ -6,30 +6,7 @@ from task1_environment.policy.constants import ACTION_SPACE
 from task2_qlearning_tiancheng_wang.q_policy import q_policy
 
 
-# # get initial status
-# def get_initial_status(game):
-#     done = game.process.termination
-#     state = calculate_state(
-#         self_position=game.agent.position,
-#         common_observation=game.common_observation,
-#         setting=game.setting,
-#         synthetic_array=game.synthetic_array,
-#         blinky_p=game.blinky.position,
-#         inky_p=game.inky.position
-#     )
-#
-#     return state, done
-#
-#
-# # training step wrapper
-# def training_step(game):
-#     game.run_one_step_without_graph()
-#     action = tuple(game.agent.direction_proposal)
-#     state = game.agent.policy.state
-#     reward = game.process.current_reward
-#     done = game.process.termination
-#     return action, state, reward, done
-
+# training script
 
 def train(game, state_func, q_table, total_episode, epsilon, alpha, gamma, evaluate_every, games_per_eval):
     rng = default_rng(1)
@@ -89,6 +66,8 @@ def train(game, state_func, q_table, total_episode, epsilon, alpha, gamma, evalu
         sys.stdout.flush()
     return rewards, eval_reward, eval_living_time, eval_win
 
+
+# not in use
 # # training function
 # def train(game, alpha=0.01, gamma=0.99):
 #     q_table = game.agent.policy.q_table
