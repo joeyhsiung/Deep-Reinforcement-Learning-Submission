@@ -9,7 +9,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from task1_environment.policy.baseline import agent_policy, blinky_policy, random_policy, blinky_policy_random, inky_policy
 from matplotlib.animation import FuncAnimation
-from tqdm import tqdm
 
 # Local application imports
 # if using relative importing, i.e., "from .maze..." it will raise error because
